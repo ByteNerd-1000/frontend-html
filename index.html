@@ -36,7 +36,7 @@
 
         sendButton.addEventListener('click', () => {
             const message = document.getElementById('messageInput').value;
-            fetch('http://localhost:3000/message', { // Adjust the URL if deployed
+            fetch('https://testins-model.vercel.app/message', { // Adjust the URL if deployed
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,7 +54,7 @@
         });
 
         getButton.addEventListener('click', () => {
-            fetch('http://localhost:3000/message') // Adjust the URL if deployed
+            fetch('https://testins-model.vercel.app/message') // Adjust the URL if deployed
             .then(response => response.json())
             .then(data => {
                 const messages = data.messages;
