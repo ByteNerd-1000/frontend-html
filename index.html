@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Data Fetch Example</title>
+    <title>Message Storage</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,33 +14,58 @@
             margin-top: 20px;
             border: 1px solid #ccc;
             padding: 10px;
-            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Data from API</h1>
-    <button id="fetchData">Fetch Data</button>
+    <h1>Store and Retrieve Messages</h1>
+
+    <h2>Send a Message</h2>
+    <input type="text" id="messageInput" placeholder="Enter your message">
+    <button id="sendButton">Send Message</button>
+
+    <h2>Retrieve Messages</h2>
+    <button id="getButton">Get Messages</button>
+
     <div id="data"></div>
 
     <script>
-        document.getElementById('fetchData').addEventListener('click', () => {
-            fetch('https://testins-model.vercel.app/') // Replace with your API endpoint
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Displaying the data in the 'data' div
-                    const dataDiv = document.getElementById('data');
-                    dataDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                })
-                .catch(error => {
-                    const dataDiv = document.getElementById('data');
-                    dataDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        const sendButton = document.getElementById('sendButton');
+        const getButton = document.getElementById('getButton');
+        const dataDiv = document.getElementById('data');
+
+        sendButton.addEventListener('click', () => {
+            const message = document.getElementById('messageInput').value;
+            fetch('http://localhost:3000/message', { // Adjust the URL if deployed
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                dataDiv.innerHTML = `<p>${data.message}</p>`;
+                document.getElementById('messageInput').value = ''; // Clear input after sending
+            })
+            .catch(error => {
+                dataDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+        });
+
+        getButton.addEventListener('click', () => {
+            fetch('http://localhost:3000/message') // Adjust the URL if deployed
+            .then(response => response.json())
+            .then(data => {
+                const messages = data.messages;
+                dataDiv.innerHTML = ''; // Clear previous messages
+                messages.forEach(msg => {
+                    dataDiv.innerHTML += `<p>${msg}</p>`; // Display each message
                 });
+            })
+            .catch(error => {
+                dataDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
         });
     </script>
 </body>
